@@ -4,13 +4,33 @@
 #define ssid "ZBC-E-CH-SKP019 0986"
 #define pass "710%dK14"
 
-#define ip "192.168.137.106"
+#define ip "192.168.137.206"
 #define port 63584
 
 char deviceName[] = "Arduino";
 
+#define sensorPower 7
+#define sensorPin A0
+
+#define sensorPower1 8
+#define sensorPin1 A1
+
+#define sensorPower2 9
+#define sensorPin2 A2
+
+#define sensorPower3 10
+#define sensorPin3 A3
+
+#define sensorPower4 11
+#define sensorPin4 A4
+
+#define sensorPower5 12
+#define sensorPin5 A5
+
 void setup() {
   Serial.begin(9600);
+  setupSoilSensor();
+
 
   WiFi.hostname(deviceName);
   WiFi.begin(ssid, pass);
@@ -34,12 +54,12 @@ void loop() {
       StaticJsonBuffer<200> jsonBuffer;
       JsonObject& root = jsonBuffer.createObject();
       JsonArray& data = root.createNestedArray("Soil Moisture Data");
-      data.add(0);
-      data.add(200);
-      data.add(400);
-      data.add(600);
-      data.add(800);
-      data.add(1000);
+      data.add(readDataFromSoilSensor(sensorPower,sensorPin));
+      data.add(readDataFromSoilSensor(sensorPower1,sensorPin1));
+      data.add(readDataFromSoilSensor(sensorPower2,sensorPin2));
+      data.add(readDataFromSoilSensor(sensorPower3,sensorPin3));
+      data.add(readDataFromSoilSensor(sensorPower4,sensorPin4));
+      data.add(readDataFromSoilSensor(sensorPower5,sensorPin5));
 
       String json;
       root.printTo(json);
@@ -68,6 +88,35 @@ void loop() {
       delay(1000);
     }
   }
+}
+
+void setupSoilSensor()
+{
+  pinMode(sensorPower, OUTPUT);
+	pinMode(sensorPower1, OUTPUT);
+  pinMode(sensorPower2, OUTPUT);
+	pinMode(sensorPower3, OUTPUT);
+	pinMode(sensorPower4, OUTPUT);
+  pinMode(sensorPower5, OUTPUT);
+
+  digitalWrite(sensorPower, LOW);
+	digitalWrite(sensorPower1, LOW);
+  digitalWrite(sensorPower2, LOW);
+  digitalWrite(sensorPower3, LOW);
+	digitalWrite(sensorPower4, LOW);
+  digitalWrite(sensorPower5, LOW);
+}
+
+int readDataFromSoilSensor(int sensorPowerPin, int sensorAnalogPin)
+{
+  digitalWrite(sensorPowerPin, HIGH);	
+	delay(10);
+
+	int value = analogRead(sensorAnalogPin);
+
+	digitalWrite(sensorPowerPin, LOW);
+
+  return value;
 }
 
 
