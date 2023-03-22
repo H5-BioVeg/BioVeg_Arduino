@@ -6,7 +6,7 @@
 #define pass "710%dK14"
 
 // Server settings
-#define ip "192.168.137.206"
+#define ip "192.168.137.29"
 #define port 63584
 
 char deviceName[] = "Arduino";
@@ -49,7 +49,6 @@ void setup() {
 }
 
 void loop() {
-  delay(5000);
   //Check WiFi connection status
   if (WiFi.status() == WL_CONNECTED) {
     WiFiClient http;
@@ -58,9 +57,8 @@ void loop() {
     //Check connection status
     if (http.connected()) {
       //Create JSON object to send to server
-      StaticJsonBuffer<200> jsonBuffer;
-      JsonObject& root = jsonBuffer.createObject();
-      JsonArray& data = root.createNestedArray("Soil Moisture Data");
+      StaticJsonDocument<200> doc;
+      JsonArray data = doc.createNestedArray("Soil Moisture Data");
       data.add(readDataFromSoilSensor(sensorPower,sensorPin));
       data.add(readDataFromSoilSensor(sensorPower1,sensorPin1));
       data.add(readDataFromSoilSensor(sensorPower2,sensorPin2));
@@ -69,7 +67,7 @@ void loop() {
       data.add(readDataFromSoilSensor(sensorPower5,sensorPin5));
       //Convert JSON object to string
       String json;
-      root.printTo(json);
+      serializeJson(doc, json);
       //Send HTTP request to server
       http.println("POST / HTTP/1.1");
       http.println("Host: " + String(ip));
