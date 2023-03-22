@@ -171,7 +171,7 @@ void loop() {
     //Close connection
     http.stop();
     http.flush();
-    delay(5000);
+    delay(2000);
     //Change state
     pr = 2;
   } else {
@@ -180,10 +180,9 @@ void loop() {
     WiFiSSLClient http;
     //Connect to Firebase
     http.connect(FIREBASE_HOST, FIREBASE_PORT);
-    delay(5000);
+    delay(2000);
     //Check connection
     if (http.connected()) {
-      Serial.println("Debug");
       // json data to send to firebase
       char json[jsonData.length() + 1];
       strcpy(json, jsonData.c_str());
@@ -205,8 +204,6 @@ void loop() {
       serializeJson(doc, jsonString);
       Serial.println(jsonString);
 
-      delay(1000);
-
       //Send HTTP request to Firebase
       http.println("PATCH /.json HTTP/1.1");
       http.println("Host: " + String(FIREBASE_HOST));
@@ -226,7 +223,7 @@ void loop() {
       //Close connection
       http.stop();
       http.flush();
-      delay(5000);
+      delay(2000);
       //Change state
       pr = 0;
     }
