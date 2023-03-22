@@ -40,8 +40,6 @@ int pr = 0;
 
 void setup() {
   Serial.begin(9600);
-  while (!Serial) { ; }
-
 
   WiFi.hostname(DEVICE_NAME);
   status = WiFi.begin(ssid, pass);
@@ -110,12 +108,9 @@ void loop() {
               deserializeJson(jsonBuffer, json);
               // Extract values
               const char* sensor = jsonBuffer["sensor"];
-              smd[0] = jsonBuffer["Soil Moisture Data"][0];
-              smd[1] = jsonBuffer["Soil Moisture Data"][1];
-              smd[2] = jsonBuffer["Soil Moisture Data"][2];
-              smd[3] = jsonBuffer["Soil Moisture Data"][3];
-              smd[4] = jsonBuffer["Soil Moisture Data"][4];
-              smd[5] = jsonBuffer["Soil Moisture Data"][5];
+              for (int i = 0; i < 6; i++) {
+                smd[i] = jsonBuffer["Soil Moisture Data"][i];
+              }
             }
             // send a standard http response header
             client.println("HTTP/1.1 200 OK");
@@ -152,7 +147,7 @@ void loop() {
     WiFiSSLClient http;
     //Connect to Firebase
     http.connect(FIREBASE_HOST, FIREBASE_PORT);
-    delay(2000);
+    delay(500);
     //Check connection
     if (http.connected()) {
       //Send HTTP request to Firebase
@@ -180,7 +175,7 @@ void loop() {
     WiFiSSLClient http;
     //Connect to Firebase
     http.connect(FIREBASE_HOST, FIREBASE_PORT);
-    delay(2000);
+    delay(500);
     //Check connection
     if (http.connected()) {
       // json data to send to firebase
@@ -193,12 +188,9 @@ void loop() {
       // Extract values from object and change them
       doc["greenhouses"]["greenhouse1"]["humidity"] = (int)hum;
       doc["greenhouses"]["greenhouse1"]["temperature"] = (int)temp;
-      doc["greenhouses"]["greenhouse1"]["pots"]["pot1"]["currentSoilMoisture"] = smd[0];
-      doc["greenhouses"]["greenhouse1"]["pots"]["pot2"]["currentSoilMoisture"] = smd[1];
-      doc["greenhouses"]["greenhouse1"]["pots"]["pot3"]["currentSoilMoisture"] = smd[2];
-      doc["greenhouses"]["greenhouse1"]["pots"]["pot4"]["currentSoilMoisture"] = smd[3];
-      doc["greenhouses"]["greenhouse1"]["pots"]["pot5"]["currentSoilMoisture"] = smd[4];
-      doc["greenhouses"]["greenhouse1"]["pots"]["pot6"]["currentSoilMoisture"] = smd[5];
+      for (int i = 0; i < 6; i++) {
+        doc["greenhouses"]["greenhouse1"]["pots"]["pot" + String(i + 1)]["currentSoilMoisture"] = smd[i];
+      }
       // Serialize JSON to file
       String jsonString;
       serializeJson(doc, jsonString);
