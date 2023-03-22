@@ -111,12 +111,7 @@ void loop() {
                 smd[i] = jsonBuffer["Soil Moisture Data"][i];
               }
             }
-            // send a standard http response header
-            client.println("HTTP/1.1 200 OK");
-            client.println("Content-type:text/html");
-            client.println();
-            client.println("OK");
-            client.println();
+            sendStandardHttpResponse(client,"text/html", "OK");
             Serial.println("\n############################################");
             readDHT();
             //Change state
@@ -236,4 +231,12 @@ void readDHT() {
   Serial.print(" *C, ");
   Serial.print((int)hum);
   Serial.println(" H");
+}
+
+void sendStandardHttpResponse(WiFiClient client, String contentType, String content) {
+  client.println("HTTP/1.1 200 OK");
+  client.println("Content-type:" + contentType);
+  client.println();
+  client.println(content);
+  client.println();
 }
