@@ -35,7 +35,6 @@ enum state {
   GET_DATA,
   PATCH_DATA
 };
-//State
 int state = RECIVE_DATA;
 
 void setup() {
@@ -119,12 +118,7 @@ void loop() {
             client.println("OK");
             client.println();
             Serial.println("\n############################################");
-            // read the data from the DHT sensor
-            dht11.read(&temp, &hum, NULL);
-            Serial.print((int)temp);
-            Serial.print(" *C, ");
-            Serial.print((int)hum);
-            Serial.println(" H");
+            readDHT();
             //Change state
             state = GET_DATA;
             // break out of the while loop
@@ -233,4 +227,13 @@ void printWiFiStatus() {
 
   Serial.print("http://");
   Serial.println(ip);
+}
+
+//Read DHT11 sensor data
+void readDHT() {
+  dht11.read(&temp, &hum, NULL);
+  Serial.print((int)temp);
+  Serial.print(" *C, ");
+  Serial.print((int)hum);
+  Serial.println(" H");
 }
