@@ -14,18 +14,16 @@ int status = WL_IDLE_STATUS;
 //Server
 #define DEVICE_NAME "Master Arduino"
 #define port 63584
+WiFiServer server(port);
 //DHT11
 int DHT11_PIN = 8;
 SimpleDHT11 dht11(DHT11_PIN);
 
-int statusH = WL_IDLE_STATUS;
-WiFiServer server(port);
-
 //Data from sensor
-int smd[6] = {0, 0, 0, 0, 0, 0};
-
+int smd[6] = { 0, 0, 0, 0, 0, 0 };
 byte temp = 0;
 byte hum = 0;
+
 //Data from Firebase
 String jsonData;
 
@@ -35,6 +33,7 @@ enum state {
   GET_DATA,
   PATCH_DATA
 };
+
 int state = RECIVE_DATA;
 
 void setup() {
@@ -111,7 +110,7 @@ void loop() {
                 smd[i] = jsonBuffer["Soil Moisture Data"][i];
               }
             }
-            sendStandardHttpResponse(client,"text/html", "OK");
+            sendStandardHttpResponse(client, "text/html", "OK");
             Serial.println("\n############################################");
             readDHT();
             changeState();
@@ -156,7 +155,7 @@ void loop() {
     http.flush();
     delay(2000);
     changeState();
-  } else if(state == PATCH_DATA){
+  } else if (state == PATCH_DATA) {
     Serial.println("############ PATCH ############");
     //WiFiSSL client for HTTPS connection
     WiFiSSLClient http;
