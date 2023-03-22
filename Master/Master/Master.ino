@@ -36,7 +36,7 @@ enum state {
   PATCH_DATA
 };
 //State
-int pr = 0;
+int state = RECIVE_DATA;
 
 void setup() {
   Serial.begin(9600);
@@ -72,7 +72,7 @@ void loop() {
   delay(500);
   // make a String to hold incoming data from the client
   String currentLine = "";
-  if (pr == 0) {
+  if (state == RECIVE_DATA) {
     Serial.println("############ RECIVE ############");
     // if you get a client,
     while (client.connected()) {
@@ -126,7 +126,7 @@ void loop() {
             Serial.print((int)hum);
             Serial.println(" H");
             //Change state
-            pr = 1;
+            state = GET_DATA;
             // break out of the while loop
             break;
           } else {
@@ -141,7 +141,7 @@ void loop() {
     // close the connection:
     client.stop();
     client.flush();
-  } else if (pr == 1) {
+  } else if (state == GET_DATA) {
     Serial.println("############ GET ############");
     //WiFiSSL client for HTTPS connection
     WiFiSSLClient http;
@@ -168,8 +168,8 @@ void loop() {
     http.flush();
     delay(2000);
     //Change state
-    pr = 2;
-  } else {
+    state = PATCH_DATA;
+  } else if(state == PATCH_DATA){
     Serial.println("############ PATCH ############");
     //WiFiSSL client for HTTPS connection
     WiFiSSLClient http;
@@ -217,7 +217,7 @@ void loop() {
       http.flush();
       delay(2000);
       //Change state
-      pr = 0;
+      state = RECIVE_DATA;
     }
   }
 }
