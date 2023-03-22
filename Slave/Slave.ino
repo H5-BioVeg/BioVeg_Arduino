@@ -10,25 +10,9 @@
 #define port 63584
 
 char deviceName[] = "Arduino";
-//int sensorPower[6] = {7,8,9,10,11,12};
-//int sensorPin[6] = {A0,A1,A2,A3,A4,A5};
-#define sensorPower 7
-#define sensorPin A0
-
-#define sensorPower1 8
-#define sensorPin1 A1
-
-#define sensorPower2 9
-#define sensorPin2 A2
-
-#define sensorPower3 10
-#define sensorPin3 A3
-
-#define sensorPower4 11
-#define sensorPin4 A4
-
-#define sensorPower5 12
-#define sensorPin5 A5
+//Soil sensor settings 
+int sensorPower[6] = {7,8,9,10,11,12};
+int sensorPin[6] = {A0,A1,A2,A3,A4,A5};
 
 void setup() {
   Serial.begin(9600);
@@ -59,19 +43,17 @@ void loop() {
       //Create JSON object to send to server
       StaticJsonDocument<200> doc;
       JsonArray data = doc.createNestedArray("Soil Moisture Data");
-      data.add(readDataFromSoilSensor(sensorPower,sensorPin));
-      data.add(readDataFromSoilSensor(sensorPower1,sensorPin1));
-      data.add(readDataFromSoilSensor(sensorPower2,sensorPin2));
-      data.add(readDataFromSoilSensor(sensorPower3,sensorPin3));
-      data.add(readDataFromSoilSensor(sensorPower4,sensorPin4));
-      data.add(readDataFromSoilSensor(sensorPower5,sensorPin5));
+      //Read data from soil sensor and add to JSON object
+      for (int i = 0; i < 6; i++) {
+        data.add(readDataFromSoilSensor(sensorPower[i],sensorPin[i]));
+      }
       //Convert JSON object to string
       String json;
       serializeJson(doc, json);
       //Send HTTP request to server
       http.println("POST / HTTP/1.1");
       http.println("Host: " + String(ip));
-      http.println("Content-Type: text/plain");
+      http.println("Content-Type: application/json");
       http.println("Content-Length: " + String(json.length()));
       http.println("Accept-Encoding: gzip, deflate, br");
       http.println("Accept: */*");
@@ -95,20 +77,12 @@ void loop() {
 
 void setupSoilSensor()
 {
-  //Setup soil sensor pins
-  pinMode(sensorPower, OUTPUT);
-	pinMode(sensorPower1, OUTPUT);
-  pinMode(sensorPower2, OUTPUT);
-	pinMode(sensorPower3, OUTPUT);
-	pinMode(sensorPower4, OUTPUT);
-  pinMode(sensorPower5, OUTPUT);
-  //Turn off soil sensor power
-  digitalWrite(sensorPower, LOW);
-	digitalWrite(sensorPower1, LOW);
-  digitalWrite(sensorPower2, LOW);
-  digitalWrite(sensorPower3, LOW);
-	digitalWrite(sensorPower4, LOW);
-  digitalWrite(sensorPower5, LOW);
+  for (int i = 0; i < 6; i++) {
+    //Set soil sensor power pin to output
+    pinMode(sensorPower[i], OUTPUT);
+    //Turn off soil sensor power
+    digitalWrite(sensorPower[i], LOW);
+  }
 }
 //Read data from soil sensor
 int readDataFromSoilSensor(int sensorPowerPin, int sensorAnalogPin)
