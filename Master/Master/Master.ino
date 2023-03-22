@@ -114,8 +114,7 @@ void loop() {
             sendStandardHttpResponse(client,"text/html", "OK");
             Serial.println("\n############################################");
             readDHT();
-            //Change state
-            state = GET_DATA;
+            changeState();
             // break out of the while loop
             break;
           } else {
@@ -156,8 +155,7 @@ void loop() {
     http.stop();
     http.flush();
     delay(2000);
-    //Change state
-    state = PATCH_DATA;
+    changeState();
   } else if(state == PATCH_DATA){
     Serial.println("############ PATCH ############");
     //WiFiSSL client for HTTPS connection
@@ -205,8 +203,7 @@ void loop() {
       http.stop();
       http.flush();
       delay(2000);
-      //Change state
-      state = RECIVE_DATA;
+      changeState();
     }
   }
 }
@@ -239,4 +236,14 @@ void sendStandardHttpResponse(WiFiClient client, String contentType, String cont
   client.println();
   client.println(content);
   client.println();
+}
+
+void changeState() {
+  if (state == RECIVE_DATA) {
+    state = GET_DATA;
+  } else if (state == GET_DATA) {
+    state = PATCH_DATA;
+  } else if (state == PATCH_DATA) {
+    state = RECIVE_DATA;
+  }
 }
