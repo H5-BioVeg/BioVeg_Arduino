@@ -1,6 +1,6 @@
 #include <SPI.h>
 #include <WiFi101.h>      //0.16.0
-#include <ArduinoJson.h>  //5.13.4
+#include <ArduinoJson.h>  //6.20.1
 #include <SimpleDHT.h>    //1.0.14
 
 //Firebase
@@ -72,7 +72,7 @@ void loop() {
   String currentLine = "";
   if (state == RECIVE_DATA) {
     Serial.println("############ RECIVE ############");
-    // if you get a client,
+    // get a client
     while (client.connected()) {
       // if there's bytes to read from the client,
       if (client.available()) {
@@ -80,11 +80,11 @@ void loop() {
         char c = client.read();
         delay(10);
         Serial.write(c);
-        // if the byte is a newline character
+        // if the byte is a newline
         if (c == '\n') {
           if (currentLine.length() == 0) {
             String requestBody;
-            // the HTTP request ends with another blank line
+            // the HTTP request ends with another newline
             while (client.available()) {
               // read all the lines of the request body
               requestBody += (char)client.read();
